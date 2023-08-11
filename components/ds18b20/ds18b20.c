@@ -62,13 +62,13 @@ uint8_t ds18b20_read(void){
 	ets_delay_us(9);
 
     gpio_set_direction(GPIO_PIN, GPIO_MODE_INPUT);
-	value = gpio_get_level(GPIO_PIN);
+	value = gpio_get_level(GPIO_PIN);  
 	ets_delay_us(55);
 
 	return (value);
 }
 
-//Write a byte
+//Write a byte                                                                                                                                                  
 void ds18b20_write_byte(uint8_t data){
     for (int i = 0; i < 8; i++){
         ds18b20_write(data & 0x01);
@@ -84,7 +84,7 @@ uint8_t ds18b20_read_byte(void){
         data >>= 1;
         data |= ds18b20_read() << 7;
         ets_delay_us(15);
-    }
+    }                                                                                                                                                                       
     return data;
 }
 
