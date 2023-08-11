@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "author": "Minh Chien Giap",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 30.66, "left": -16.67, "attrs": {} },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd1",
+      "top": -91.86,
+      "left": 205.73,
+      "attrs": { "pins": "i2c" }
+    },
+    { "type": "board-ds18b20", "id": "temp1", "top": 78.9, "left": 259.13, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "lcd1:GND", "esp:GND.2", "black", [ "h-254.23", "v244.26" ] ],
+    [ "lcd1:VCC", "esp:VIN", "red", [ "h-264.9", "v254.09" ] ],
+    [ "lcd1:SDA", "esp:D21", "green", [ "h-107.56", "v139.26" ] ],
+    [ "lcd1:SCL", "esp:D22", "green", [ "h-58.9", "v95.76" ] ],
+    [ "temp1:VCC", "esp:VIN", "red", [ "v119.71", "h-318.35", "v-83.33" ] ],
+    [ "temp1:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "temp1:DQ", "esp:D4", "green", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

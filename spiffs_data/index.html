@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ESP32 Web Server</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .status {
+      font-weight: bold;
+    }
+    .relay-container {
+      display: flex;
+      align-items: center;
+    }
+    .relay-button {
+      margin-left: 10px;
+      padding: 6px 12px;
+      background-color: #3498db;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.1s;
+    }
+    .relay-button:hover {
+      background-color: #2980b9;
+    }
+    .relay-button:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body>
+  <h1>ESP32 Web Server</h1>
+  <p>Nhiệt độ hiện tại: <span id="temperature" class="status">Loading...</span></p>
+  
+  <h2>Trạng thái Relay</h2>
+  <div class="relay-container">
+    <p>Đèn: <span id="relay1" class="status">Tắt</span></p>
+    <button class="relay-button" onclick="toggleRelay(1)">Bật/Tắt</button>
+  </div>
+  <div class="relay-container">
+    <p>Quạt: <span id="relay2" class="status">Tắt</span></p>
+    <button class="relay-button" onclick="toggleRelay(2)">Bật/Tắt</button>
+  </div>
+  
+  <script>
+    function updateTemperature() {
+      // Gửi yêu cầu GET đến máy chủ ESP32
+      fetch('/temperature')
+        .then(response => response.json())
+        .then(data => {
+          if (data.temperature > -50 && data.temperature < 125){
+          const temperatureElement = document.getElementById("temperature");
+          temperatureElement.innerHTML = data.temperature + " °C";
+          }
+        })
+        .catch(error => {
+          console.error('Lỗi khi lấy dữ liệu nhiệt độ:', error);
+        });
+    }
+
+    function updateRelay1State() {
+      // Gửi yêu cầu GET đến endpoint tương ứng để cập nhật trạng thái Relay
+      fetch('/relay1')
+        .then(response => response.json())
+        .then(data => {
+          const relayStatus = data['relay1'];
+          const relayElement = document.getElementById('relay1');
+          relayElement.innerHTML = relayStatus ? 'Bật' : 'Tắt';
+        })
+        .catch(error => {
+          console.error('Lỗi khi cập nhật trạng thái Relay:', error);
+        });
+    }
+
+    function updateRelay2State() {
+      // Gửi yêu cầu GET đến endpoint tương ứng để cập nhật trạng thái Relay
+      fetch('/relay2')
+        .then(response => response.json())
+        .then(data => {
+          const relayStatus = data['relay2'];
+          const relayElement = document.getElementById('relay2');
+          relayElement.innerHTML = relayStatus ? 'Bật' : 'Tắt';
+        })
+        .catch(error => {
+          console.error('Lỗi khi cập nhật trạng thái Relay:', error);
+        });
+    }
+
+    function toggleRelay(relayNumber) {
+      // Gửi yêu cầu POST để đảo trạng thái Relay
+      fetch('/toggle-relay' + relayNumber, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+          if (relayNumber == 1){
+            relay1.innerHTML = relay1.innerHTML == 'Bật' ? 'Tắt' : 'Bật';
+          }
+          if (relayNumber == 2) relay2.innerHTML = relay2.innerHTML == 'Bật' ? 'Tắt' : 'Bật';;
+        })
+        .catch(error => {
+          console.error('Lỗi khi đảo trạng thái Relay:', error);
+        });
+    }
+
+    // Đăng ký sự kiện click cho các nút Relay để đảo trạng thái
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('toggleRelay1').addEventListener('click', function() {
+        toggleRelay(1);
+      });
+      document.getElementById('toggleRelay2').addEventListener('click', function() {
+        toggleRelay(2);
+      });
+    });
+
+    // Update temperature every 5 seconds
+    setInterval(updateTemperature, 5000);
+
+    // Update relay state every 5 seconds
+    setInterval(updateRelay1State, 5000);
+    setInterval(updateRelay2State, 5000);
+  </script>
+</body>
+</html>
